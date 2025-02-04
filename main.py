@@ -55,7 +55,6 @@ async def run_test(file_path, input_text):
         await page.wait_for_function(
             """() => document.querySelector("span.mt-4").textContent.trim() === 'Esperando tecla...'"""
         )
-a
 
 
         await page.wait_for_timeout(30000000)
