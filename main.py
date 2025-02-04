@@ -8,6 +8,11 @@ async def run_test(file_path, input_text):
         await page.goto("https://vonsim.github.io")
         await asyncio.sleep(0.1)
 
+        #hacer zoom out
+        for _ in range(5):
+            await page.click("button[title='Alejar']")
+            await asyncio.sleep(0.5)
+
         # Habilitar teclado y pantalla
         await page.click("button[title='Configuración']")
         await asyncio.sleep(0.1)
@@ -41,21 +46,67 @@ async def run_test(file_path, input_text):
 
         # Cargar código ensamblador en el panel de código
         textbox = page.locator("div[role='textbox']")
+        await textbox.clear()
+
         with open(file_path, "r") as f:
             asm_code = f.read()
         await textbox.fill(asm_code)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.5)
 
         # Ejecutar el programa paso a paso
         await page.click("button:has-text('Iniciar')")
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.5)
         await page.keyboard.press("F4")
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.5)
+        keyboard_html = await page.locator("div[data-skbtn]").all_inner_texts()
+        print("Teclas encontradas en el teclado virtual:", keyboard_html)
+        await page.pause()
+        for char in input_text:
+            tab = page.locator("div[data-skbtn='{tab}']").first
+            await tab.click(force=True)
+            await page.wait_for_function(
+                """() => document.querySelector("span.mt-4").textContent.trim() === 'Esperando tecla...'"""
+            )
+            is_upper = char.isupper()
+            is_space = char == " "
 
+            if is_upper:
+                print(f"Presionando mayúscula")
+                # Presionar el botón de "Bloq Mayús" antes de la letra mayúscula
+                caps_lock_btn = page.locator('div[data-skbtn="{lock}"]').first
+                await caps_lock_btn.scroll_into_view_if_needed()
+                await asyncio.sleep(0.1)
+
+                await caps_lock_btn.click(force=True)
+                await asyncio.sleep(0.1)
+
+            # Desactivar Bloq Mayús después de una mayúscula
+
+            if is_space:
+                # Presionar la tecla de espacio en el teclado virtual
+                space_button = page.locator("div[data-skbtn='{space}']").first
+                if await space_button.count() > 0:
+                    await space_button.click()
+                    await asyncio.sleep(0.1)
+                    continue
+
+            print(f"Buscando tecla '{char}'")
+            key_button = page.locator(f'div[data-skbtn="{char}"]').first
+            await key_button.scroll_into_view_if_needed()
+            await key_button.click(force=True)
+            print(f"Presiono tecla '{char}'")
+
+            if is_upper:
+                print(f"Desactivando mayúscula")
+                await caps_lock_btn.scroll_into_view_if_needed()
+                await caps_lock_btn.click(force=True)
+                await asyncio.sleep(0.1)
         await page.wait_for_function(
             """() => document.querySelector("span.mt-4").textContent.trim() === 'Esperando tecla...'"""
         )
-
+        intro = page.locator("div[data-skbtn='{enter}']").first
+        await intro.scroll_into_view_if_needed()
+        await intro.click(force=True)
 
         await page.wait_for_timeout(30000000)
 
