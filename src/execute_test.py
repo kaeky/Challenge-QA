@@ -3,7 +3,7 @@ from src.browser_setup import get_browser
 from src.config_playwright import configure_simulation
 from src.text_input import type_text
 from src.load_files import load_file
-
+from src.validate_text import validate_text
 
 async def run_test(file_path, input_text):
     """Ejecuta la prueba para un archivo ensamblador y entrada de texto"""
@@ -19,4 +19,5 @@ async def run_test(file_path, input_text):
 
     await type_text(page, input_text)
 
+    await validate_text(page, input_text)
     await browser.close()
