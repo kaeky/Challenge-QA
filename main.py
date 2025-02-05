@@ -4,7 +4,7 @@ from src.execute_test import run_test
 from tests.test_cases import test_cases
 
 # Definir un semáforo para limitar a 5 navegadores simultáneos
-semaphore = asyncio.Semaphore(20)
+semaphore = asyncio.Semaphore(5)
 
 async def run_limited_test(file_path, text):
     async with semaphore:
