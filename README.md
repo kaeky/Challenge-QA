@@ -1,9 +1,11 @@
 Documentacion para iniciar la validacion de la aplicacion
-activar el entorno virtual 
+crear entorno virtual y activar el entorno virtual 
 ```bash
-# source .venv/Scripts/activate
+  python -m venv .venv
+  source .venv/Scripts/activate
 ```
-correr el programa
+Instalar requirements correr el programa
 ```bash
-# python main.py
+  pip install -r requirements.txt
+  python main.py
 ```

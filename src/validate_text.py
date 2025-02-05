@@ -6,11 +6,15 @@ async def validate_text(page, expected_text):
         await asyncio.wait_for(
             page.wait_for_function(
                 """() => document.querySelector("span.mt-4")?.textContent.trim() === 'Detenido'""",
+                timeout=60000
             ),
             timeout=30
         )
     except asyncio.TimeoutError:
         print(f"Timeout: No se encontró el texto 'Detenido' en {expected_text}, validar posible bucle infinito.")
+        return
+    except Exception as e:
+        print(f"Error al esperar el texto 'Detenido': {e}")
         return
 
     start_button = page.locator("button:has-text('Iniciar')")

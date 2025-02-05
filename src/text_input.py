@@ -64,7 +64,7 @@ async def type_text(page, input_text):
             await asyncio.sleep(0.1)
 
     await page.wait_for_function(
-        """() => document.querySelector("span.mt-4").textContent.trim() === 'Esperando tecla...'"""
+        """() => document.querySelector("span.mt-4").textContent.trim() === 'Esperando tecla...'""",
     )
     await page.locator("div[data-skbtn='{enter}']").first.click(force=True)
 
